@@ -1,9 +1,7 @@
 import React from 'react'
 
-function Doctors() {
-  return (
-    <div>Doctors</div>
-  )
+const Doctors = () => {
+  return <div>Doctors Page</div>
 }
 
 export default Doctors

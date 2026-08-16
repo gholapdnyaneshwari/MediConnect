@@ -1,13 +1,7 @@
 import React from 'react'
 
-function MyProfile() {
-  return (
-    <div>MyProfile</div>
-  )
+const MyProfile = () => {
+  return <div>My Profile Page</div>
 }
 
 export default MyProfile
-
-
-
-

@@ -297,3 +297,4 @@ export const doctors = [
         }
     },
 ]
+export default assets
