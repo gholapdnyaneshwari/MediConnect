@@ -5,13 +5,16 @@ import { AppContext } from '../context/AppContext'
 const Doctors = () => {
   const { speciality } = useParams()
   const [filterDoc, setFilterDoc] = useState([])
+  const [showFilter, setShowFilter] = useState(false)
   const navigate = useNavigate()
 
   const { doctors } = useContext(AppContext)
 
   const applyFilter = () => {
     if (speciality) {
-      setFilterDoc(doctors.filter(doc => doc.speciality === speciality))
+      setFilterDoc(
+        doctors.filter(doc => doc.speciality === speciality)
+      )
     } else {
       setFilterDoc(doctors)
     }
@@ -29,7 +32,22 @@ const Doctors = () => {
 
       <div className='flex flex-col sm:flex-row items-start gap-5 mt-5'>
 
-        <div className='flex flex-col gap-4 text-sm text-gray-600'>
+        {/* Filter Button */}
+        <button
+          className={`py-1 px-3 border rounded text-sm transition-all sm:hidden ${
+            showFilter ? 'bg-primary text-white' : ''
+          }`}
+          onClick={() => setShowFilter(prev => !prev)}
+        >
+          Filters
+        </button>
+
+        {/* Speciality Filter */}
+        <div
+          className={`flex flex-col gap-4 text-sm text-gray-600 ${
+            showFilter ? 'flex' : 'hidden sm:flex'
+          }`}
+        >
 
           <p
             onClick={() => navigate('/doctors/General physician')}
@@ -99,6 +117,7 @@ const Doctors = () => {
 
         </div>
 
+        {/* Doctors Grid */}
         <div className='w-full grid grid-cols-auto gap-4 gap-y-6'>
 
           {filterDoc.map((item, index) => (
@@ -110,9 +129,9 @@ const Doctors = () => {
             >
 
               <img
-                className='bg-blue-50'
+                className='bg-blue-50 w-full'
                 src={item.image}
-                alt=''
+                alt={item.name}
               />
 
               <div className='p-4'>
