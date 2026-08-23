@@ -5,7 +5,7 @@ const connectDB = async () => {
         console.log("Database connected");
     });
 
-    await mongoose.connect(`${process.env.MONGODB_URL}/mediconnect`);
+    await mongoose.connect(process.env.MONGODB_URL);
 };
 
 export default connectDB;
