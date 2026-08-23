@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+<defs>
+  <linearGradient id="cross" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0877ee"/><stop offset="1" stop-color="#20d0b7"/></linearGradient>
+  <linearGradient id="text" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#173d8f"/><stop offset=".5" stop-color="#173d8f"/><stop offset=".52" stop-color="#08aaa0"/><stop offset="1" stop-color="#0bc3a8"/></linearGradient>
+  <linearGradient id="line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1456bd"/><stop offset="1" stop-color="#14bda5"/></linearGradient>
+</defs>
+<rect width="1536" height="1024" fill="#fff"/>
+
+<!-- medical cross -->
+<rect x="216" y="145" width="184" height="455" rx="32" fill="url(#cross)"/>
+<rect x="78" y="283" width="455" height="183" rx="32" fill="url(#cross)"/>
+
+<!-- stethoscope -->
+<path d="M210 227 C150 190 154 320 205 320 C235 320 244 292 244 263" fill="none" stroke="#f7f8fa" stroke-width="18" stroke-linecap="round"/>
+<path d="M402 227 C462 190 458 320 407 320 C377 320 368 292 368 263" fill="none" stroke="#f7f8fa" stroke-width="18" stroke-linecap="round"/>
+<circle cx="245" cy="228" r="16" fill="#1647a0"/><circle cx="369" cy="228" r="16" fill="#1647a0"/>
+
+<!-- heart and ECG -->
+<path d="M307 310 C273 270 221 291 221 334 C221 378 263 409 307 443 C351 409 393 378 393 334 C393 291 341 270 307 310 Z" fill="#18c4b1"/>
+<path d="M240 350 H274 L288 327 L304 369 L319 341 L333 356 H374" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- stethoscope tube -->
+<path d="M245 391 C255 458 280 479 308 479 C337 479 366 453 369 418" fill="none" stroke="#123d9a" stroke-width="18" stroke-linecap="round"/>
+<path d="M308 479 C327 514 359 539 404 539" fill="none" stroke="#123d9a" stroke-width="18" stroke-linecap="round"/>
+<circle cx="463" cy="540" r="58" fill="#fff" stroke="#164aa2" stroke-width="14"/>
+<circle cx="463" cy="540" r="26" fill="#1675df"/>
+
+<!-- wordmark -->
+<text x="590" y="435" font-family="Arial, Helvetica, sans-serif" font-size="150" font-weight="700" fill="url(#text)">MediConnect</text>
+<!-- heart dot -->
+<path d="M1017 302 C1002 279 971 291 971 315 C971 337 996 356 1017 371 C1038 356 1063 337 1063 315 C1063 291 1032 279 1017 302 Z" fill="#18c5b1"/>
+
+<!-- ECG underline -->
+<path d="M620 532 H950 L978 532 L1003 495 L1028 577 L1055 514 L1080 532 H1435" fill="none" stroke="url(#line)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
