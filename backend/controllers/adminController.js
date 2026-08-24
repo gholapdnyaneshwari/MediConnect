@@ -2,8 +2,12 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
+
+// ===============================
+// ADD DOCTOR
+// ===============================
 const addDoctor = async (req, res) => {
     try {
 
@@ -22,6 +26,7 @@ const addDoctor = async (req, res) => {
 
         const imageFile = req.file;
 
+        // Check missing details
         if (
             !name ||
             !email ||
@@ -40,6 +45,7 @@ const addDoctor = async (req, res) => {
             });
         }
 
+        // Check email
         if (!validator.isEmail(email)) {
             return res.json({
                 success: false,
@@ -47,6 +53,7 @@ const addDoctor = async (req, res) => {
             });
         }
 
+        // Check password
         if (password.length < 8) {
             return res.json({
                 success: false,
@@ -54,12 +61,14 @@ const addDoctor = async (req, res) => {
             });
         }
 
+        // Hash password
         const salt = await bcrypt.genSalt(10);
-
         const hashedPassword = await bcrypt.hash(password, salt);
+
         console.log("IMAGE FILE:", imageFile);
         console.log("IMAGE PATH:", imageFile.path);
 
+        // Upload image to Cloudinary
         const imageUpload = await cloudinary.uploader.upload(
             imageFile.path,
             {
@@ -69,6 +78,7 @@ const addDoctor = async (req, res) => {
 
         const imageUrl = imageUpload.secure_url;
 
+        // Doctor data
         const doctorData = {
             name,
             email,
@@ -84,6 +94,7 @@ const addDoctor = async (req, res) => {
             date: Date.now()
         };
 
+        // Create doctor
         const newDoctor = new doctorModel(doctorData);
 
         await newDoctor.save();
@@ -93,29 +104,36 @@ const addDoctor = async (req, res) => {
             message: "Doctor Added"
         });
 
-    }  catch (error) {
+    } catch (error) {
 
-    console.log("========== ERROR ==========");
-    console.log("Message:", error.message);
-    console.log("HTTP Code:", error.http_code);
-    console.log("Name:", error.name);
-    console.log("Full Error:", error);
-    console.log("===========================");
+        console.log("========== ERROR ==========");
+        console.log("Message:", error.message);
+        console.log("HTTP Code:", error.http_code);
+        console.log("Name:", error.name);
+        console.log("Full Error:", error);
+        console.log("===========================");
 
-    res.json({
-        success: false,
-        message: error.message
-    });
-}
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
 };
+
+
+// ===============================
+// ADMIN LOGIN
+// ===============================
 const loginAdmin = async (req, res) => {
     try {
+
         const { email, password } = req.body;
 
         if (
             email === process.env.ADMIN_EMAIL &&
             password === process.env.ADMIN_PASSWORD
         ) {
+
             const token = jwt.sign(
                 email + password,
                 process.env.JWT_SECRET
@@ -127,13 +145,16 @@ const loginAdmin = async (req, res) => {
             });
 
         } else {
+
             res.json({
                 success: false,
                 message: "Invalid credentials"
             });
+
         }
 
     } catch (error) {
+
         console.log(error);
 
         res.json({
@@ -144,4 +165,36 @@ const loginAdmin = async (req, res) => {
 };
 
 
-export { addDoctor, loginAdmin };
+// ===============================
+// GET ALL DOCTORS
+// ===============================
+const allDoctors = async (req, res) => {
+
+    try {
+
+        const doctors = await doctorModel
+            .find({})
+            .select("-password");
+
+        res.json({
+            success: true,
+            doctors
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+
+export {
+    addDoctor,
+    loginAdmin,
+    allDoctors
+};

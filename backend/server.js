@@ -10,16 +10,25 @@ const app = express();
 
 const port = process.env.PORT || 4000;
 
+// Database
 connectDB();
+
+// Cloudinary
 connectCloudinary();
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
-console.log("adminRouter =", adminRouter);
+
+// Admin routes
 app.use("/api/admin", adminRouter);
 
+// Test API
 app.get("/", (req, res) => {
     res.send("API WORKING");
 });
 
-app.listen(port, () => console.log("Server Started", port));    
+// Start server
+app.listen(port, () => {
+    console.log("Server Started", port);
+});
