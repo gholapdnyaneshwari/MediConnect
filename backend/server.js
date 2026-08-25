@@ -4,10 +4,12 @@ import "dotenv/config";
 
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
+
 import adminRouter from "./routes/adminRoute.js";
+import doctorRouter from "./routes/doctorRoute.js";
+import userRouter from "./routes/userRoute.js";
 
 const app = express();
-
 const port = process.env.PORT || 4000;
 
 // Database
@@ -20,15 +22,17 @@ connectCloudinary();
 app.use(cors());
 app.use(express.json());
 
-// Admin routes
+// Routes
 app.use("/api/admin", adminRouter);
+app.use("/api/doctor", doctorRouter);
+app.use("/api/user", userRouter);
 
 // Test API
 app.get("/", (req, res) => {
-    res.send("API WORKING");
+  res.send("API WORKING");
 });
 
-// Start server
+// Start Server
 app.listen(port, () => {
-    console.log("Server Started", port);
+  console.log("Server Started", port);
 });
