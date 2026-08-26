@@ -1,11 +1,21 @@
-import React, { useState } from 'react'
+
+import React, { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
 const Navbar = () => {
+
   const navigate = useNavigate()
+
+  const { token, setToken } = useContext(AppContext)
+
   const [showMenu, setShowMenu] = useState(false)
-  const [token, setToken] = useState(true)
+
+  const logout = () => {
+    setToken(false)
+    localStorage.removeItem('token')
+  }
 
   return (
     <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400'>
@@ -65,6 +75,7 @@ const Navbar = () => {
 
             {/* Profile Dropdown */}
             <div className='absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block'>
+
               <div className='min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4'>
 
                 <p
@@ -82,13 +93,14 @@ const Navbar = () => {
                 </p>
 
                 <p
-                  onClick={() => setToken(false)}
+                  onClick={logout}
                   className='hover:text-black cursor-pointer'
                 >
                   Logout
                 </p>
 
               </div>
+
             </div>
 
           </div>
@@ -122,6 +134,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Header */}
           <div className='flex items-center justify-between px-5 py-6'>
+
             <img
               className='w-36'
               src={assets.logo}
@@ -134,37 +147,46 @@ const Navbar = () => {
               src={assets.cross_icon}
               alt=''
             />
+
           </div>
 
           {/* Mobile Links */}
           <ul className='flex flex-col gap-2 px-5 mt-5 text-lg font-medium'>
 
-            <NavLink 
+            <NavLink
               onClick={() => setShowMenu(false)}
               to='/'
             >
-              <p className='px-4 py-2 rounded inline-block'>HOME</p>
+              <p className='px-4 py-2 rounded inline-block'>
+                HOME
+              </p>
             </NavLink>
 
-            <NavLink 
+            <NavLink
               onClick={() => setShowMenu(false)}
               to='/doctors'
             >
-             <p className='px-4 py-2 rounded inline-block'>ALL DOCTORS</p> 
+              <p className='px-4 py-2 rounded inline-block'>
+                ALL DOCTORS
+              </p>
             </NavLink>
 
-            <NavLink 
+            <NavLink
               onClick={() => setShowMenu(false)}
               to='/about'
             >
-              <p className='px-4 py-2 rounded inline-block'>ABOUT</p>
+              <p className='px-4 py-2 rounded inline-block'>
+                ABOUT
+              </p>
             </NavLink>
 
-            <NavLink 
+            <NavLink
               onClick={() => setShowMenu(false)}
               to='/contact'
             >
-              <p className='px-4 py-2 rounded inline-block'>CONTACT</p>
+              <p className='px-4 py-2 rounded inline-block'>
+                CONTACT
+              </p>
             </NavLink>
 
           </ul>
@@ -178,3 +200,5 @@ const Navbar = () => {
 }
 
 export default Navbar
+
+
