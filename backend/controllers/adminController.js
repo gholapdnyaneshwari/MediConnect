@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import jwt from "jsonwebtoken";
+import appointmentModel from "../models/appointmentModel.js";
 
 
 // ===============================
@@ -193,8 +194,199 @@ const allDoctors = async (req, res) => {
 };
 
 
+// ===============================
+// GET ALL APPOINTMENTS
+// ===============================
+
+const appointmentsAdmin = async (req, res) => {
+
+    try {
+
+        const appointments =
+            await appointmentModel.find({});
+
+        res.json({
+            success: true,
+            appointments
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.json({
+            success: false,
+            message: error.message
+        });
+
+    }
+};
+
+
+// ===============================
+// CANCEL APPOINTMENT BY ADMIN
+// ===============================
+
+const AppointmentCancel = async (req, res) => {
+
+    try {
+
+        const {
+            appointmentId
+        } = req.body;
+
+
+        // Check appointment ID
+
+        if (!appointmentId) {
+
+            return res.json({
+
+                success: false,
+
+                message:
+                    "Missing appointment details"
+
+            });
+
+        }
+
+
+        // Find appointment
+
+        const appointment =
+            await appointmentModel.findById(
+                appointmentId
+            );
+
+
+        if (!appointment) {
+
+            return res.json({
+
+                success: false,
+
+                message:
+                    "Appointment not found"
+
+            });
+
+        }
+
+
+        // Check already cancelled
+
+        if (appointment.cancelled) {
+
+            return res.json({
+
+                success: false,
+
+                message:
+                    "Appointment already cancelled"
+
+            });
+
+        }
+
+
+        // Cancel appointment
+
+        await appointmentModel.findByIdAndUpdate(
+
+            appointmentId,
+
+            {
+                cancelled: true
+            }
+
+        );
+
+
+        // Find doctor
+
+        const doctorData =
+            await doctorModel.findById(
+                appointment.docId
+            );
+
+
+        if (doctorData) {
+
+            let slots_booked =
+                doctorData.slots_booked || {};
+
+
+            // Check appointment date
+
+            if (
+                slots_booked[
+                    appointment.slotData
+                ]
+            ) {
+
+                // Remove cancelled slot
+
+                slots_booked[
+                    appointment.slotData
+                ] =
+                    slots_booked[
+                        appointment.slotData
+                    ].filter(
+                        (slot) =>
+                            slot !==
+                            appointment.slotTime
+                    );
+
+
+                // Update doctor's slots
+
+                await doctorModel.findByIdAndUpdate(
+
+                    appointment.docId,
+
+                    {
+                        slots_booked
+                    }
+
+                );
+
+            }
+
+        }
+
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "Appointment Cancelled"
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.json({
+
+            success: false,
+
+            message:
+                error.message
+
+        });
+
+    }
+
+};
+
+
 export {
     addDoctor,
     loginAdmin,
-    allDoctors
+    allDoctors,
+    appointmentsAdmin,
+    AppointmentCancel
 };

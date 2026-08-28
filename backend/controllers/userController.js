@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 
+
 // ================= REGISTER USER =================
 
 const registerUser = async (req, res) => {
@@ -65,7 +66,7 @@ const registerUser = async (req, res) => {
             process.env.JWT_SECRET
         );
 
-        res.json({
+        return res.json({
             success: true,
             token
         });
@@ -74,7 +75,7 @@ const registerUser = async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        return res.json({
             success: false,
             message: error.message
         });
@@ -115,7 +116,7 @@ const loginUser = async (req, res) => {
             process.env.JWT_SECRET
         );
 
-        res.json({
+        return res.json({
             success: true,
             token
         });
@@ -124,7 +125,7 @@ const loginUser = async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        return res.json({
             success: false,
             message: error.message
         });
@@ -150,17 +151,23 @@ const getProfile = async (req, res) => {
             });
         }
 
-        res.json({
+        return res.json({
             success: true,
+
             userData: {
                 ...userData.toObject(),
+
                 phone: userData.phone || "",
+
                 address: {
                     line1: userData.address?.line1 || "",
                     line2: userData.address?.line2 || ""
                 },
+
                 gender: userData.gender || "Male",
+
                 dob: userData.dob || "",
+
                 image: userData.image || ""
             }
         });
@@ -169,7 +176,7 @@ const getProfile = async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        return res.json({
             success: false,
             message: error.message
         });
@@ -203,12 +210,16 @@ const updateProfile = async (req, res) => {
         let parsedAddress = {};
 
         if (address) {
+
             try {
+
                 parsedAddress =
                     typeof address === "string"
                         ? JSON.parse(address)
                         : address;
+
             } catch (error) {
+
                 return res.json({
                     success: false,
                     message: "Invalid address format"
@@ -229,14 +240,16 @@ const updateProfile = async (req, res) => {
 
         if (imageFile) {
 
-            const imageUpload = await cloudinary.uploader.upload(
-                imageFile.path,
-                {
-                    resource_type: "image"
-                }
-            );
+            const imageUpload =
+                await cloudinary.uploader.upload(
+                    imageFile.path,
+                    {
+                        resource_type: "image"
+                    }
+                );
 
-            const imageURL = imageUpload.secure_url;
+            const imageURL =
+                imageUpload.secure_url;
 
             await userModel.findByIdAndUpdate(
                 userId,
@@ -246,7 +259,7 @@ const updateProfile = async (req, res) => {
             );
         }
 
-        res.json({
+        return res.json({
             success: true,
             message: "Profile Updated"
         });
@@ -255,17 +268,13 @@ const updateProfile = async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        return res.json({
             success: false,
             message: error.message
         });
     }
 };
 
-
-// ================= BOOK APPOINTMENT =================
-
-// ================= BOOK APPOINTMENT =================
 
 // ================= BOOK APPOINTMENT =================
 
@@ -280,79 +289,71 @@ const bookAppointment = async (req, res) => {
             slotTime
         } = req.body;
 
-
-        // Check required data
-        if (!userId || !docId || !slotData || !slotTime) {
+        if (
+            !userId ||
+            !docId ||
+            !slotData ||
+            !slotTime
+        ) {
 
             return res.json({
                 success: false,
                 message: "Missing appointment details"
             });
-
         }
 
+        const docData =
+            await doctorModel
+                .findById(docId)
+                .select("-password");
 
-        // Find doctor
-        const docData = await doctorModel
-            .findById(docId)
-            .select("-password");
-
-
-        // Doctor does not exist
         if (!docData) {
 
             return res.json({
                 success: false,
                 message: "Doctor not found"
             });
-
         }
 
-
-        // Doctor unavailable
         if (!docData.available) {
 
             return res.json({
                 success: false,
                 message: "Doctor not available"
             });
-
         }
 
+        let slots_booked =
+            docData.slots_booked || {};
 
-        // Get booked slots
-        let slots_booked = docData.slots_booked || {};
-
-
-        // Check whether this date already has booked slots
         if (slots_booked[slotData]) {
 
-            // Check whether selected time is already booked
-            if (slots_booked[slotData].includes(slotTime)) {
+            if (
+                slots_booked[slotData]
+                    .includes(slotTime)
+            ) {
 
                 return res.json({
                     success: false,
                     message: "Slot not available"
                 });
-
             }
 
-            // Add new time slot
-            slots_booked[slotData].push(slotTime);
+            slots_booked[slotData].push(
+                slotTime
+            );
 
         } else {
 
-            // Create new date and add time slot
-            slots_booked[slotData] = [slotTime];
-
+            slots_booked[slotData] = [
+                slotTime
+            ];
         }
 
-
-        // Find user
-        const userData = await userModel
-            .findById(userId)
-            .select("-password");
-
+        const userData =
+            await userModel
+                .findById(userId)
+                .select("-password");
 
         if (!userData) {
 
@@ -360,77 +361,69 @@ const bookAppointment = async (req, res) => {
                 success: false,
                 message: "User not found"
             });
-
         }
 
+        const doctorObject =
+            docData.toObject();
 
-        // Convert doctor document to object
-        const doctorObject = docData.toObject();
-
-
-        // Remove slots_booked from appointment data
         delete doctorObject.slots_booked;
 
-
-        // Appointment data
         const appointmentData = {
 
             userId,
 
             docId,
 
-            userData: userData.toObject(),
+            userData:
+                userData.toObject(),
 
-            docData: doctorObject,
+            docData:
+                doctorObject,
 
-            amount: docData.fees,
+            amount:
+                docData.fees,
 
             slotTime,
 
             slotData,
 
-            date: Date.now(),
+            date:
+                Date.now(),
 
-            cancelled: false,
+            cancelled:
+                false,
 
-            payment: false,
+            payment:
+                false,
 
-            isCompleted: false
-
+            isCompleted:
+                false
         };
 
-
-        // Save appointment
         const newAppointment =
-            new appointmentModel(appointmentData);
-
+            new appointmentModel(
+                appointmentData
+            );
 
         await newAppointment.save();
 
-
-        // Update doctor's booked slots
         await doctorModel.findByIdAndUpdate(
-
             docId,
-
             {
                 slots_booked
             }
-
         );
-
 
         return res.json({
 
             success: true,
 
-            message: "Appointment Booked"
+            message:
+                "Appointment Booked"
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.log(error);
 
@@ -438,28 +431,30 @@ const bookAppointment = async (req, res) => {
 
             success: false,
 
-            message: error.message
+            message:
+                error.message
 
         });
-
     }
-
 };
 
 
 // ================= LIST APPOINTMENTS =================
 
-const listAppointment = async (req, res) => {
+const listAppointment = async (
+    req,
+    res
+) => {
 
     try {
 
-        const { userId } = req.body;
+        const { userId } =
+            req.body;
 
-
-        const appointments = await appointmentModel
-            .find({ userId })
-            .sort({ date: -1 });
-
+        const appointments =
+            await appointmentModel
+                .find({ userId })
+                .sort({ date: -1 });
 
         return res.json({
 
@@ -469,9 +464,7 @@ const listAppointment = async (req, res) => {
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.log(error);
 
@@ -479,44 +472,46 @@ const listAppointment = async (req, res) => {
 
             success: false,
 
-            message: error.message
+            message:
+                error.message
 
         });
-
     }
-
 };
 
 
 // ================= CANCEL APPOINTMENT =================
 
-const cancelAppointment = async (req, res) => {
+const cancelAppointment = async (
+    req,
+    res
+) => {
 
     try {
 
-        const { userId, appointmentId } = req.body;
+        const {
+            userId,
+            appointmentId
+        } = req.body;
 
-
-        // Check required data
-        if (!userId || !appointmentId) {
+        if (
+            !userId ||
+            !appointmentId
+        ) {
 
             return res.json({
 
                 success: false,
 
-                message: "Missing appointment details"
+                message:
+                    "Missing appointment details"
 
             });
-
         }
 
-
-        // Find appointment
         const appointment =
-            await appointmentModel.findById(
-                appointmentId
-            );
-
+            await appointmentModel
+                .findById(appointmentId);
 
         if (!appointment) {
 
@@ -524,43 +519,39 @@ const cancelAppointment = async (req, res) => {
 
                 success: false,
 
-                message: "Appointment not found"
+                message:
+                    "Appointment not found"
 
             });
-
         }
 
-
-        // Check whether this appointment belongs
-        // to the logged-in user
-        if (appointment.userId.toString() !== userId.toString()) {
+        if (
+            appointment.userId.toString() !==
+            userId.toString()
+        ) {
 
             return res.json({
 
                 success: false,
 
-                message: "Unauthorized action"
+                message:
+                    "Unauthorized action"
 
             });
-
         }
 
-
-        // Check if already cancelled
         if (appointment.cancelled) {
 
             return res.json({
 
                 success: false,
 
-                message: "Appointment already cancelled"
+                message:
+                    "Appointment already cancelled"
 
             });
-
         }
 
-
-        // Cancel appointment
         await appointmentModel.findByIdAndUpdate(
 
             appointmentId,
@@ -571,32 +562,36 @@ const cancelAppointment = async (req, res) => {
 
         );
 
+        const {daocId, slotData, slotTime} = appointmentData
 
-        // Get doctor
         const doctorData =
             await doctorModel.findById(
                 appointment.docId
             );
-
+        let slots_booked = doctorData.slot
 
         if (doctorData) {
 
             let slots_booked =
                 doctorData.slots_booked || {};
 
+            if (
+                slots_booked[
+                    appointment.slotData
+                ]
+            ) {
 
-            // Check if date exists
-            if (slots_booked[appointment.slotData]) {
+                slots_booked[
+                    appointment.slotData
+                ] =
+                    slots_booked[
+                        appointment.slotData
+                    ].filter(
+                        (slot) =>
+                            slot !==
+                            appointment.slotTime
+                    );
 
-                // Remove cancelled time slot
-                slots_booked[appointment.slotData] =
-                    slots_booked[appointment.slotData]
-                        .filter(
-                            (e) => e !== appointment.slotTime
-                        );
-
-
-                // Update doctor's slots
                 await doctorModel.findByIdAndUpdate(
 
                     appointment.docId,
@@ -606,23 +601,19 @@ const cancelAppointment = async (req, res) => {
                     }
 
                 );
-
             }
-
         }
-
 
         return res.json({
 
             success: true,
 
-            message: "Appointment Cancelled"
+            message:
+                "Appointment Cancelled"
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.log(error);
 
@@ -630,22 +621,30 @@ const cancelAppointment = async (req, res) => {
 
             success: false,
 
-            message: error.message
+            message:
+                error.message
 
         });
-
     }
-
 };
+
 
 // ================= EXPORT =================
 
 export {
+
     registerUser,
+
     loginUser,
+
     getProfile,
+
     updateProfile,
+
     bookAppointment,
+
     listAppointment,
+
     cancelAppointment
+
 };

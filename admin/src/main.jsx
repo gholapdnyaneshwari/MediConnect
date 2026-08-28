@@ -5,13 +5,24 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import AdminContextProvider from './context/AdminCortext.jsx'
 import DoctorContextProvider from './context/doctorContext.jsx'
+import AppContextProvider from './context/AppContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
+
     <AdminContextProvider>
+
       <DoctorContextProvider>
-        <App />
+
+        <AppContextProvider>
+
+          <App />
+
+        </AppContextProvider>
+
       </DoctorContextProvider>
+
     </AdminContextProvider>
+
   </BrowserRouter>
 )

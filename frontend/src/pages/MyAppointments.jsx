@@ -9,6 +9,7 @@ import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 
 const MyAppointments = () => {
@@ -24,7 +25,7 @@ const MyAppointments = () => {
 
 
   const months = [
-    " ",
+    "",
     "Jan",
     "Feb",
     "Mar",
@@ -58,7 +59,7 @@ const MyAppointments = () => {
 
   }
 
-
+ const navigate = useNavigate()
   // ================= GET USER APPOINTMENTS =================
 
   const getUserAppointments = async () => {
@@ -66,16 +67,12 @@ const MyAppointments = () => {
     try {
 
       const { data } = await axios.get(
-
-        backendUrl +
-        '/api/user/appointments',
-
+        backendUrl + '/api/user/appointments',
         {
           headers: {
             token
           }
         }
-
       )
 
 
@@ -131,10 +128,12 @@ const MyAppointments = () => {
 
         toast.success(data.message)
 
-        // Reload appointments
-        getUserAppointments()
-        getDoctorsData()
+        // Refresh appointments
+        await getUserAppointments()
 
+        // Refresh doctors so the cancelled
+        // slot becomes available again
+        await getDoctorsData()
 
       } else {
 
@@ -163,6 +162,10 @@ const MyAppointments = () => {
     if (token) {
 
       getUserAppointments()
+
+    } else {
+
+      setAppointments([])
 
     }
 
@@ -213,7 +216,7 @@ const MyAppointments = () => {
                   <img
                     className='w-32 bg-indigo-50'
                     src={item.docData?.image}
-                    alt=''
+                    alt={item.docData?.name || 'Doctor'}
                   />
 
                 </div>
@@ -298,17 +301,12 @@ const MyAppointments = () => {
                 </div>
 
 
-                {/* Empty div for spacing */}
-
-                <div></div>
-
-
                 {/* ================= BUTTONS ================= */}
 
                 <div className='flex flex-col gap-2 justify-end'>
 
 
-                  {/* PAY ONLINE */}
+                  {/* ================= PAY ONLINE ================= */}
 
                   {!item.cancelled && (
 
@@ -323,7 +321,7 @@ const MyAppointments = () => {
                   )}
 
 
-                  {/* CANCEL */}
+                  {/* ================= CANCEL ================= */}
 
                   {!item.cancelled && (
 

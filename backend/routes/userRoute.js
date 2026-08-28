@@ -68,6 +68,14 @@ userRouter.get(
     listAppointment
 );
 
-userRouter.post('/cancel-appointment',authUser,cancelAppointment)
+
+// ================= CANCEL APPOINTMENT =================
+
+userRouter.post(
+    "/cancel-appointment",
+    authUser,
+    cancelAppointment
+);
+
 
 export default userRouter;
