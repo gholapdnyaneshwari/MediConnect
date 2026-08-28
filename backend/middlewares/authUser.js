@@ -20,6 +20,7 @@ const authUser = async (req, res, next) => {
         );
 
         // Get user ID from token
+        req.body = req.body || {};
         req.body.userId = token_decode.id;
 
         // Continue to next middleware/controller

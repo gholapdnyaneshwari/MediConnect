@@ -37,6 +37,7 @@ const Login = () => {
           setToken(data.token)
 
           toast.success('Account created successfully')
+          navigate('/')
 
         } else {
 
@@ -60,6 +61,7 @@ const Login = () => {
           setToken(data.token)
 
           toast.success('Login successful')
+          navigate('/')
 
         } else {
 
@@ -79,7 +81,6 @@ const Login = () => {
     }
   }
 
-  // Navigate to home page after successful login/signup
   useEffect(() => {
 
     if (token) {
@@ -105,7 +106,6 @@ const Login = () => {
           Please {state === 'Sign Up' ? 'sign up' : 'log in'} to book appointment
         </p>
 
-        {/* Name - only for Sign Up */}
         {state === 'Sign Up' && (
 
           <div className='w-full'>
@@ -124,7 +124,6 @@ const Login = () => {
 
         )}
 
-        {/* Email */}
         <div className='w-full'>
 
           <p>Email</p>
@@ -139,7 +138,6 @@ const Login = () => {
 
         </div>
 
-        {/* Password */}
         <div className='w-full'>
 
           <p>Password</p>
@@ -154,7 +152,6 @@ const Login = () => {
 
         </div>
 
-        {/* Submit Button */}
         <button
           type='submit'
           className='bg-primary text-white w-full py-2 rounded-md text-base'
@@ -162,7 +159,6 @@ const Login = () => {
           {state === 'Sign Up' ? 'Create Account' : 'Login'}
         </button>
 
-        {/* Switch Login / Signup */}
         {
           state === 'Sign Up'
 
