@@ -10,29 +10,34 @@ import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 
 const app = express();
-const port = process.env.PORT || 4000;
 
-// Database
-connectDB();
+const port = process.env.PORT || 10000;
 
-// Cloudinary
-connectCloudinary();
-
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
 
-// Test API
 app.get("/", (req, res) => {
-  res.send("API WORKING");
+    res.send("API WORKING");
 });
 
-// Start Server
-app.listen(port, () => {
-  console.log("Server Started", port);
-});
+const startServer = async () => {
+    try {
+        await connectDB();
+
+        connectCloudinary();
+
+        app.listen(port, "0.0.0.0", () => {
+            console.log(`Server Started on port ${port}`);
+        });
+
+    } catch (error) {
+        console.error("Server startup failed:", error);
+        process.exit(1);
+    }
+};
+
+startServer();
