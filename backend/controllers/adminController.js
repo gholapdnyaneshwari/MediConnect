@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
+import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 
@@ -9,6 +10,7 @@ import appointmentModel from "../models/appointmentModel.js";
 // ===============================
 // ADD DOCTOR
 // ===============================
+
 const addDoctor = async (req, res) => {
     try {
 
@@ -64,20 +66,25 @@ const addDoctor = async (req, res) => {
 
         // Hash password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(
+            password,
+            salt
+        );
 
         console.log("IMAGE FILE:", imageFile);
         console.log("IMAGE PATH:", imageFile.path);
 
         // Upload image to Cloudinary
-        const imageUpload = await cloudinary.uploader.upload(
-            imageFile.path,
-            {
-                resource_type: "image"
-            }
-        );
+        const imageUpload =
+            await cloudinary.uploader.upload(
+                imageFile.path,
+                {
+                    resource_type: "image"
+                }
+            );
 
-        const imageUrl = imageUpload.secure_url;
+        const imageUrl =
+            imageUpload.secure_url;
 
         // Doctor data
         const doctorData = {
@@ -96,7 +103,8 @@ const addDoctor = async (req, res) => {
         };
 
         // Create doctor
-        const newDoctor = new doctorModel(doctorData);
+        const newDoctor =
+            new doctorModel(doctorData);
 
         await newDoctor.save();
 
@@ -125,10 +133,14 @@ const addDoctor = async (req, res) => {
 // ===============================
 // ADMIN LOGIN
 // ===============================
+
 const loginAdmin = async (req, res) => {
     try {
 
-        const { email, password } = req.body;
+        const {
+            email,
+            password
+        } = req.body;
 
         if (
             email === process.env.ADMIN_EMAIL &&
@@ -169,13 +181,15 @@ const loginAdmin = async (req, res) => {
 // ===============================
 // GET ALL DOCTORS
 // ===============================
+
 const allDoctors = async (req, res) => {
 
     try {
 
-        const doctors = await doctorModel
-            .find({})
-            .select("-password");
+        const doctors =
+            await doctorModel
+                .find({})
+                .select("-password");
 
         res.json({
             success: true,
@@ -235,90 +249,61 @@ const AppointmentCancel = async (req, res) => {
             appointmentId
         } = req.body;
 
-
         // Check appointment ID
-
         if (!appointmentId) {
 
             return res.json({
-
                 success: false,
-
-                message:
-                    "Missing appointment details"
-
+                message: "Missing appointment details"
             });
 
         }
 
-
         // Find appointment
-
         const appointment =
             await appointmentModel.findById(
                 appointmentId
             );
 
-
         if (!appointment) {
 
             return res.json({
-
                 success: false,
-
-                message:
-                    "Appointment not found"
-
+                message: "Appointment not found"
             });
 
         }
 
-
         // Check already cancelled
-
         if (appointment.cancelled) {
 
             return res.json({
-
                 success: false,
-
-                message:
-                    "Appointment already cancelled"
-
+                message: "Appointment already cancelled"
             });
 
         }
 
-
         // Cancel appointment
-
         await appointmentModel.findByIdAndUpdate(
-
             appointmentId,
-
             {
                 cancelled: true
             }
-
         );
 
-
         // Find doctor
-
         const doctorData =
             await doctorModel.findById(
                 appointment.docId
             );
-
 
         if (doctorData) {
 
             let slots_booked =
                 doctorData.slots_booked || {};
 
-
             // Check appointment date
-
             if (
                 slots_booked[
                     appointment.slotData
@@ -326,7 +311,6 @@ const AppointmentCancel = async (req, res) => {
             ) {
 
                 // Remove cancelled slot
-
                 slots_booked[
                     appointment.slotData
                 ] =
@@ -338,31 +322,20 @@ const AppointmentCancel = async (req, res) => {
                             appointment.slotTime
                     );
 
-
-                // Update doctor's slots
-
+                // Update doctor
                 await doctorModel.findByIdAndUpdate(
-
                     appointment.docId,
-
                     {
                         slots_booked
                     }
-
                 );
 
             }
-
         }
 
-
         return res.json({
-
             success: true,
-
-            message:
-                "Appointment Cancelled"
-
+            message: "Appointment Cancelled"
         });
 
     } catch (error) {
@@ -370,12 +343,8 @@ const AppointmentCancel = async (req, res) => {
         console.log(error);
 
         return res.json({
-
             success: false,
-
-            message:
-                error.message
-
+            message: error.message
         });
 
     }
@@ -383,10 +352,66 @@ const AppointmentCancel = async (req, res) => {
 };
 
 
+// ===============================
+// ADMIN DASHBOARD
+// ===============================
+
+const adminDashboard = async (req, res) => {
+
+    try {
+
+        const doctors =
+            await doctorModel.find({});
+
+        const users =
+            await userModel.find({});
+
+        const appointments =
+            await appointmentModel.find({});
+
+        const dashData = {
+
+            doctors: doctors.length,
+
+            appointments: appointments.length,
+
+            patients: users.length,
+
+            latestAppointments:
+                appointments
+                    .reverse()
+                    .slice(0, 5)
+
+        };
+
+        res.json({
+            success: true,
+            dashData
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// ===============================
+// EXPORT
+// ===============================
+
 export {
     addDoctor,
     loginAdmin,
     allDoctors,
     appointmentsAdmin,
-    AppointmentCancel
+    AppointmentCancel,
+    adminDashboard
 };

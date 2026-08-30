@@ -1,34 +1,35 @@
 import React, { useContext, useEffect } from 'react'
-
-import { AdminContext } from '../../context/AdminCortext'
-import { AppContext } from '../../context/AppContext'
+import { DoctorContext } from '../../context/DoctorContext'
 import { assets } from '../../assets/assets'
+import { AppContext } from '../../context/AppContext'
 
-const Dashboard = () => {
+const DoctorDashboard = () => {
 
   const {
-    aToken,
+    dToken,
+    dashData,
     getDashData,
-    cancelAppointment,
-    dashData
-  } = useContext(AdminContext)
+    completeAppointment,
+    cancelAppointment
+  } = useContext(DoctorContext)
 
   const {
+    currency,
     slotDateFormat
   } = useContext(AppContext)
 
 
   useEffect(() => {
 
-    if (aToken) {
+    if (dToken) {
       getDashData()
     }
 
-  }, [aToken])
+  }, [dToken])
 
 
-  // Show loading while dashboard data is being fetched
   if (!dashData) {
+
     return (
       <div className='m-5'>
         <p className='text-gray-500'>
@@ -36,6 +37,7 @@ const Dashboard = () => {
         </p>
       </div>
     )
+
   }
 
 
@@ -48,24 +50,24 @@ const Dashboard = () => {
       <div className='flex flex-wrap gap-3'>
 
 
-        {/* Doctors */}
+        {/* Earnings */}
 
         <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
 
           <img
             className='w-14'
-            src={assets.doctor_icon}
+            src={assets.earning_icon}
             alt=''
           />
 
           <div>
 
             <p className='text-xl font-semibold text-gray-600'>
-              {dashData.doctors}
+              {currency} {dashData.earnings}
             </p>
 
             <p className='text-gray-400'>
-              Doctors
+              Earnings
             </p>
 
           </div>
@@ -127,10 +129,9 @@ const Dashboard = () => {
 
       {/* ================= LATEST BOOKINGS ================= */}
 
-      <div className='bg-white'>
+      <div className='bg-white mt-10'>
 
-
-        <div className='flex items-center gap-2.5 px-4 py-4 mt-10 rounded-t border'>
+        <div className='flex items-center gap-2.5 px-4 py-4 rounded-t border'>
 
           <img
             className='w-6 h-6'
@@ -156,21 +157,21 @@ const Dashboard = () => {
                   key={index}
                 >
 
-                  {/* Doctor Image */}
+                  {/* Patient Image */}
 
                   <img
                     className='rounded-full w-10'
-                    src={item.docData?.image}
+                    src={item.userData?.image}
                     alt=''
                   />
 
 
-                  {/* Doctor Details */}
+                  {/* Patient Details */}
 
                   <div className='flex-1 text-sm'>
 
                     <p className='text-gray-800 font-medium'>
-                      {item.docData?.name}
+                      {item.userData?.name}
                     </p>
 
                     <p className='text-gray-600'>
@@ -184,10 +185,11 @@ const Dashboard = () => {
                   </div>
 
 
-                  {/* Cancel / Status */}
+                  {/* Status / Actions */}
 
                   {
                     item.cancelled
+
                       ? (
 
                         <p className='text-red-400 text-xs font-medium'>
@@ -195,7 +197,9 @@ const Dashboard = () => {
                         </p>
 
                       )
+
                       : item.isCompleted
+
                         ? (
 
                           <p className='text-green-500 text-xs font-medium'>
@@ -203,16 +207,35 @@ const Dashboard = () => {
                           </p>
 
                         )
+
                         : (
 
-                          <img
-                            onClick={() =>
-                              cancelAppointment(item._id)
-                            }
-                            className='w-10 cursor-pointer'
-                            src={assets.cancel_icon}
-                            alt='Cancel'
-                          />
+                          <div className='flex gap-2'>
+
+                            {/* Cancel */}
+
+                            <img
+                              onClick={() =>
+                                cancelAppointment(item._id)
+                              }
+                              className='w-10 cursor-pointer'
+                              src={assets.cancel_icon}
+                              alt='Cancel'
+                            />
+
+
+                            {/* Complete */}
+
+                            <img
+                              onClick={() =>
+                                completeAppointment(item._id)
+                              }
+                              className='w-10 cursor-pointer'
+                              src={assets.tick_icon}
+                              alt='Complete'
+                            />
+
+                          </div>
 
                         )
                   }
@@ -233,4 +256,4 @@ const Dashboard = () => {
 
 }
 
-export default Dashboard
+export default DoctorDashboard

@@ -59,7 +59,10 @@ const MyAppointments = () => {
 
   }
 
- const navigate = useNavigate()
+
+  const navigate = useNavigate()
+
+
   // ================= GET USER APPOINTMENTS =================
 
   const getUserAppointments = async () => {
@@ -128,11 +131,8 @@ const MyAppointments = () => {
 
         toast.success(data.message)
 
-        // Refresh appointments
         await getUserAppointments()
 
-        // Refresh doctors so the cancelled
-        // slot becomes available again
         await getDoctorsData()
 
       } else {
@@ -179,9 +179,7 @@ const MyAppointments = () => {
       {/* ================= TITLE ================= */}
 
       <p className='pb-3 mt-12 font-medium text-zinc-700 border-b'>
-
         My appointments
-
       </p>
 
 
@@ -190,13 +188,10 @@ const MyAppointments = () => {
       <div>
 
         {
-
           appointments.length === 0 ? (
 
             <p className='text-gray-500 mt-5'>
-
               No appointments found.
-
             </p>
 
           ) : (
@@ -226,41 +221,30 @@ const MyAppointments = () => {
 
                 <div className='flex-1 text-sm text-zinc-600'>
 
-
                   <p className='text-neutral-800 font-semibold'>
-
                     {item.docData?.name}
-
                   </p>
 
 
                   <p>
-
                     {item.docData?.speciality}
-
                   </p>
 
 
                   {/* Address */}
 
                   <p className='text-zinc-700 font-medium mt-1'>
-
                     Address:
-
                   </p>
 
 
                   <p className='text-xs'>
-
                     {item.docData?.address?.line1}
-
                   </p>
 
 
                   <p className='text-xs'>
-
                     {item.docData?.address?.line2}
-
                   </p>
 
 
@@ -269,9 +253,7 @@ const MyAppointments = () => {
                   <p className='text-xs mt-1'>
 
                     <span className='text-sm text-neutral-700 font-medium'>
-
                       Date & Time:
-
                     </span>
 
                     {' '}
@@ -290,13 +272,10 @@ const MyAppointments = () => {
                   {item.cancelled && (
 
                     <p className='text-red-500 text-sm mt-2'>
-
                       Appointment Cancelled
-
                     </p>
 
                   )}
-
 
                 </div>
 
@@ -308,14 +287,12 @@ const MyAppointments = () => {
 
                   {/* ================= PAY ONLINE ================= */}
 
-                  {!item.cancelled && (
+                  {!item.cancelled && !item.payment && !item.isCompleted && (
 
                     <button
                       className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-primary hover:text-white transition-all duration-300'
                     >
-
                       Pay Online
-
                     </button>
 
                   )}
@@ -323,7 +300,7 @@ const MyAppointments = () => {
 
                   {/* ================= CANCEL ================= */}
 
-                  {!item.cancelled && (
+                  {!item.cancelled && !item.isCompleted && (
 
                     <button
                       onClick={() =>
@@ -331,9 +308,20 @@ const MyAppointments = () => {
                       }
                       className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-600 hover:text-white transition-all duration-300'
                     >
-
                       Cancel appointment
+                    </button>
 
+                  )}
+
+
+                  {/* ================= COMPLETED ================= */}
+
+                  {item.isCompleted && (
+
+                    <button
+                      className='sm:min-w-48 py-2 border border-green-500 rounded text-green-500'
+                    >
+                      Completed
                     </button>
 
                   )}
@@ -341,13 +329,11 @@ const MyAppointments = () => {
 
                 </div>
 
-
               </div>
 
             ))
 
           )
-
         }
 
       </div>

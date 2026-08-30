@@ -5,16 +5,20 @@ import {
   allDoctors,
   loginAdmin,
   appointmentsAdmin,
-  AppointmentCancel
+  AppointmentCancel,
+  adminDashboard
 } from '../controllers/adminController.js'
 
 import upload from '../middlewares/multer.js'
 import authAdmin from '../middlewares/authAdmin.js'
+
 import { changeAvailability } from '../controllers/doctorController.js'
 
 const adminRouter = express.Router()
 
-// Add Doctor
+
+// ================= ADD DOCTOR =================
+
 adminRouter.post(
   '/add-doctor',
   authAdmin,
@@ -22,19 +26,58 @@ adminRouter.post(
   addDoctor
 )
 
-// Admin Login
+
+// ================= ADMIN LOGIN =================
+
 adminRouter.post(
   '/login',
   loginAdmin
 )
 
-// Get All Doctors
+
+// ================= GET ALL DOCTORS =================
+
 adminRouter.post(
   '/all-doctors',
   authAdmin,
   allDoctors
 )
-adminRouter.post('/change-availability',authAdmin,changeAvailability)
-adminRouter.get('/appointments',authAdmin,appointmentsAdmin)
-adminRouter.post('/cancel-appointment',authAdmin,AppointmentCancel)
+
+
+// ================= CHANGE AVAILABILITY =================
+
+adminRouter.post(
+  '/change-availability',
+  authAdmin,
+  changeAvailability
+)
+
+
+// ================= GET ALL APPOINTMENTS =================
+
+adminRouter.get(
+  '/appointments',
+  authAdmin,
+  appointmentsAdmin
+)
+
+
+// ================= CANCEL APPOINTMENT =================
+
+adminRouter.post(
+  '/cancel-appointment',
+  authAdmin,
+  AppointmentCancel
+)
+
+
+// ================= ADMIN DASHBOARD =================
+
+adminRouter.get(
+  '/dashboard',
+  authAdmin,
+  adminDashboard
+)
+
+
 export default adminRouter

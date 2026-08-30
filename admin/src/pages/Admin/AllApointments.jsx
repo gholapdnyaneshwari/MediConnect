@@ -67,8 +67,9 @@ const AllApointments = () => {
 
           <div
             className='flex flex-wrap justify-between max-sm:gap-2 sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50'
-            key={index}
+            key={item._id || index}
           >
+
 
             {/* Number */}
 
@@ -97,14 +98,26 @@ const AllApointments = () => {
             {/* Age */}
 
             <p className='max-sm:hidden'>
-              {calculateAge(item.userData?.dob)}
+
+              {calculateAge(
+                item.userData?.dob
+              )}
+
             </p>
 
 
             {/* Date & Time */}
 
             <p>
-              {slotDateFormat(item.slotData)}, {item.slotTime}
+
+              {slotDateFormat(
+                item.slotData
+              )}
+
+              {', '}
+
+              {item.slotTime}
+
             </p>
 
 
@@ -128,7 +141,10 @@ const AllApointments = () => {
             {/* Fees */}
 
             <p>
-              {currency}{item.amount}
+
+              {currency}
+              {item.amount}
+
             </p>
 
 
@@ -136,7 +152,6 @@ const AllApointments = () => {
 
             {
               item.cancelled
-
                 ? (
 
                   <p className='text-red-400 text-xs font-medium'>
@@ -144,20 +159,28 @@ const AllApointments = () => {
                   </p>
 
                 )
+                : item.isCompleted
+                  ? (
 
-                : (
+                    <p className='text-green-500 text-xs font-medium'>
+                      Completed
+                    </p>
 
-                  <img
-                    onClick={() =>
-                      cancelAppointment(item._id)
-                    }
-                    className='w-10 cursor-pointer'
-                    src={assets.cancel_icon}
-                    alt='Cancel'
-                  />
+                  )
+                  : (
 
-                )
+                    <img
+                      onClick={() =>
+                        cancelAppointment(item._id)
+                      }
+                      className='w-10 cursor-pointer'
+                      src={assets.cancel_icon}
+                      alt='Cancel'
+                    />
+
+                  )
             }
+
 
           </div>
 

@@ -2,10 +2,12 @@ import { useContext } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import Login from './pages/Login'
+
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { AdminContext } from './context/AdminCortext'
+import { DoctorContext } from './context/DoctorContext.jsx'
 
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
@@ -15,12 +17,22 @@ import AllApointments from './pages/Admin/AllApointments'
 import DoctorList from './pages/Admin/DoctorList'
 import AddDoctor from './pages/Admin/AddDoctor'
 
+import DoctorAppointments from './pages/Doctor/DoctorAppointments'
+import DoctorDashboard from './pages/Doctor/DoctorDashboard'
+import DoctorProfile from './pages/Doctor/DoctorProfile'
+
+
 const App = () => {
+
   const { aToken } = useContext(AdminContext)
+
+  const { dToken } = useContext(DoctorContext)
+
 
   return (
     <>
-      {aToken ? (
+      {aToken || dToken ? (
+
         <div className='bg-[#F8F9FD] min-h-screen'>
 
           <Navbar />
@@ -30,7 +42,10 @@ const App = () => {
             <Sidebar />
 
             <div className='w-full'>
+
               <Routes>
+
+                {/* ================= ADMIN ================= */}
 
                 <Route
                   path='/'
@@ -57,17 +72,40 @@ const App = () => {
                   element={<DoctorList />}
                 />
 
+
+                {/* ================= DOCTOR ================= */}
+
+                <Route
+                  path='/doctor-dashboard'
+                  element={<DoctorDashboard />}
+                />
+
+                <Route
+                  path='/doctor-appointments'
+                  element={<DoctorAppointments />}
+                />
+
+                <Route
+                  path='/doctor-profile'
+                  element={<DoctorProfile />}
+                />
+
               </Routes>
+
             </div>
 
           </div>
 
         </div>
+
       ) : (
+
         <Login />
+
       )}
 
       <ToastContainer />
+
     </>
   )
 }
