@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken";
 const authDoctor = async (req, res, next) => {
     try {
 
-        const { dToken } = req.headers;
+        // Header names are converted to lowercase
+        const { dtoken } = req.headers;
 
-        if (!dToken) {
+        if (!dtoken) {
             return res.json({
                 success: false,
                 message: "Not Authorized Login Again"
@@ -13,7 +14,7 @@ const authDoctor = async (req, res, next) => {
         }
 
         const token_decode = jwt.verify(
-            dToken,
+            dtoken,
             process.env.JWT_SECRET
         );
 
@@ -24,7 +25,7 @@ const authDoctor = async (req, res, next) => {
 
     } catch (error) {
 
-        console.log(error);
+        console.log("Doctor Auth Error:", error);
 
         return res.json({
             success: false,
